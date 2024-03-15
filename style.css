@@ -1,0 +1,128 @@
+.display {
+    height: 100%;
+    width: 30%;
+
+    background-color: rgba(0, 0, 0, 1);
+
+    display: flex;
+    justify-content: space-evenly;
+
+    position: relative;
+    
+    overflow: hidden;
+}
+
+body {
+    height: 100vh;
+
+    margin: 0 5%;
+
+    display: flex;
+    justify-content: end;
+
+    overflow: hidden;
+}
+
+.controller {
+    display: flex;
+    flex-direction: column;
+
+    flex-grow: 1;
+    margin: 12px;
+}
+
+.controller > div {
+    background-color: rgba(125,125,125,0.08);
+    margin-bottom: 12px;
+}
+
+.controller > div > div {
+    padding: 12px;
+}
+
+.controller > div:last-child {
+    flex-grow: 1;
+    margin: 0;
+}
+
+.controller h3 {
+    font-size: 16pt;
+    text-align: center;
+
+    padding: 12px;
+    margin: 0;
+    background-color: rgba(255, 255, 255, .2);
+}
+
+.input-group {
+    display: flex;
+}
+
+.input-group > * {
+    flex-grow: 1;
+}
+
+.input-group > .checkbox, .input-group > .frequency {
+    flex-grow: 0;
+}
+
+.output {
+    width: 30px;
+}
+
+.input {
+    display: flex;
+    gap: 12px;
+    padding: 0 12px;
+}
+
+.select {
+    display: flex;
+    gap: 12px;
+    padding: 24px 24px !important;
+
+    background-color: rgba(255, 255, 255, .08);
+}
+
+.select > select {
+    flex-grow: 1;
+}
+
+.input > input, .input > select {
+    flex-grow: 1;
+}
+
+.sv-manipulation > * {
+    margin-bottom: 12px;
+}
+
+.mania-note {
+    width: 25%;
+
+    top: 0;
+
+    object-fit: contain;
+    position: absolute;
+}
+
+.mania-receptor {
+    width: 25%;
+
+    bottom: 0;
+
+    object-fit: contain;
+    position: absolute;
+    left: 0;
+}
+
+html,body {
+    background-color: #111;
+}
+
+html > *, body > * {
+    color: white;
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+}
