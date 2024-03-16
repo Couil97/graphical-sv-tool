@@ -57,23 +57,34 @@ function calculateHeight(type) {
     frameArray = [];
 
     let min, max, input;
+
+    let start = parseInt(interpString(document.querySelector('#start').value)) || 0;
+    let end = parseInt(interpString(document.querySelector('#end').value)) || frameCount;
     switch(type) {
         case 'linear':
             input = parseFloat(document.querySelector('#input').value);
 
             applyHeight(linearSV(input));
+            convertToTimingPoints(linearSV(input, end - start), start, end);
             break;
         case 'teleport':
             min = parseFloat(document.querySelector('#lower').value);
             max = parseFloat(document.querySelector('#upper').value);
 
-            if(document.querySelector('#urankable').checked) applyHeight(instantTPSV(min));
-            else applyHeight(teleportSV(min, max));
+            if(document.querySelector('#urankable').checked) {
+                applyHeight(instantTPSV(min))
+                convertToTimingPoints(instantTPSV(min, end - start), start, end);
+            }
+            else {
+                applyHeight(teleportSV(min, max));
+                convertToTimingPoints(teleportSV(min, max, end - start), start, end);
+            }
             break;
         case 'exponential': 
             input = parseFloat(document.querySelector('#input').value);
 
-            applyHeight(exponentialSV(input, frameCount));
+            applyHeight(exponentialSV(input));
+            convertToTimingPoints(exponentialSV(input, end - start), start, end);
             break;
         case 'stutter':
             min = parseFloat(document.querySelector('#lower').value);
@@ -82,6 +93,7 @@ function calculateHeight(type) {
             let freq = parseInt(document.querySelector('#frequency').value);
 
             applyHeight(stutterSV(min, max, freq));
+            convertToTimingPoints(stutterSV(min, max, freq, end - start), start, end);
             break;
         default:
             for(let i = 0; i < frameCount; i++) {
@@ -112,8 +124,6 @@ function applyHeight(res, length = frameCount) {
         let lastFrame = frameArray[i-1] || 0;
         frameArray.push((windowHeight / frameCount) * multi * multip + lastFrame);
     }
-
-    convertToTimingPoints(res, parseInt(interpString(document.querySelector('#start').value)), parseInt(interpString(document.querySelector('#end').value)));
 }
 
 function convertToTimingPoints(res, start = 0, end = 240) {
