@@ -110,7 +110,7 @@ function applyHeight(res) {
         }
 
         let lastFrame = frameArray[i-1] || 0;
-        frameArray.push((windowHeight / frameCount) * multi + lastFrame);
+        frameArray.push((windowHeight / frameCount) * multi * multip + lastFrame);
     }
 }
 
