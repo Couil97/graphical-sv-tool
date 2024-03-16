@@ -6,6 +6,8 @@ let timeScale = 1;
 let stop_interval;
 let draw_stopped = false;
 
+const MAX_TIMING_POINTS = 16;
+
 function draw() {
     frame = 0;
     
@@ -26,9 +28,7 @@ function draw() {
 
         frame++;
         if(frame >= frameCount) {
-            console.log('Accuracy: ' + (windowHeight / frameArray.at(-1)).toFixed(2));
-            console.log('Elapsed Time: ' + (Date.now() - time));
-
+            console.log('Undershoot: ' + (((windowHeight / frameArray.at(-1)) - 1) * 100).toFixed(0) + '%' + ', Time: ' + ((Date.now() - time) / 1000).toFixed(2) + 's');
             time = Date.now();
             frame = 0;
         }
@@ -56,161 +56,32 @@ function drawNotes(frame) {
 function calculateHeight(type) {
     frameArray = [];
 
-    let min, max, input, res;
-    let j = -1;
-
+    let min, max, input;
     switch(type) {
         case 'linear':
             input = parseFloat(document.querySelector('#input').value);
-            for(let i = 0; i < frameCount; i++) {
-                let lastFrame = frameArray[i-1] || 0;
-                frameArray.push((windowHeight / frameCount) * linearSV(i, input) + lastFrame);
-            }
+
+            applyHeight(linearSV(input));
             break;
         case 'teleport':
             min = parseFloat(document.querySelector('#lower').value);
+            max = parseFloat(document.querySelector('#upper').value);
 
-            if(document.querySelector('#urankable').checked) {
-                res = instantTPSV(min);
-                let breakpoint = res.frames;
-                max = res.max;
-
-                for(let i = 0; i < frameCount; i++) {
-                    let lastFrame = frameArray[i-1] || 0;
-    
-                    if(i <= breakpoint) {
-                        frameArray.push((windowHeight / frameCount) * (min * multip) + lastFrame);
-                    } else {
-                        frameArray.push((windowHeight / frameCount) * (max * multip) + lastFrame);
-                    }
-                }
-            } else {
-                max = parseFloat(document.querySelector('#upper').value);
-    
-                res = teleportSV(min, max);
-                let c = 0, c1 = 0, c2 = 0;
-    
-                for(let i = 0; i < frameCount; i++) {
-                    let lastFrame = frameArray[i-1] || 0;
-                    if(i < res.frames) {
-                        frameArray.push((windowHeight / frameCount) * (min * multip) + lastFrame);
-                        c++
-                    } else {
-                        if(i == frameCount - 1 && res.rest != 0) {
-                            frameArray.push((windowHeight / frameCount) * (max * res.rest * multip) + lastFrame);
-                            c1++;
-                        } else {
-                            frameArray.push((windowHeight / frameCount) * (max * multip) + lastFrame);
-                            c2++;
-                        }
-                    }
-                }
-
-                console.log(`Frames: ${res.frames}\nMin Frames: ${c}\nMax Frames: ${c2}\nEnd Frames: ${c1}\nTotal Frames: ${c+c1+c2}\n\nSum: ${(c * min) + (c2 * max) + (c1 * max * res.rest)}`);
-            }
+            if(document.querySelector('#urankable').checked) applyHeight(instantTPSV(min));
+            else applyHeight(teleportSV(min, max));
             break;
         case 'exponential': 
             input = parseFloat(document.querySelector('#input').value);
-            res = exponentialSV(input, frameCount);
 
-            let breakpoint = res[1].time;
-            let multi = res[0].multi;
-            let j = 1;
-
-            for(let i = 0; i < frameCount; i++) {
-                if(i > breakpoint) {
-                    if(j+1 >= res.length) {
-                        breakpoint = 99999999;
-                        multi = res[j].multi;
-                    }
-                    else {
-                        j++;
-                        breakpoint = res[j].time;
-                        multi = res[j-1].multi;
-                    }
-                }
-
-                let lastFrame = frameArray[i-1] || 0;
-                frameArray.push((windowHeight / frameCount) * multi + lastFrame);
-            }
+            applyHeight(exponentialSV(input, frameCount));
             break;
         case 'stutter':
-            max = parseFloat(document.querySelector('#input').value);
+            min = parseFloat(document.querySelector('#lower').value);
+            max = parseFloat(document.querySelector('#upper').value);
+
             let freq = parseInt(document.querySelector('#frequency').value);
 
-            min = 1.11111111111 - (max / 9);
-            let length = Math.round(frameCount / freq); 
-            c = 0;
-
-            let c1 = 0, c2 = 0, c3 = 0;
-
-            let lengthArr = [];
-            let sum = 0;
-
-            let above_half = false;
-
-            let rest = (length % 1);
-            if(rest > .5) {
-                rest = 1 - rest;
-                above_half = true;
-            }
-            rest = Math.round(1/rest);
-            let currentLength = 0;
-
-            for(let i = 0; i < freq; i++) {
-                if(!above_half){
-                    if(i % rest == 0) {
-                        sum += Math.ceil(length)
-                        currentLength = Math.ceil(length);
-                    } else {
-                        sum += Math.floor(length)
-                        currentLength = Math.floor(length);
-                    }
-                } else {
-                    if(i % rest == 0) {
-                        sum += Math.floor(length);
-                        currentLength = Math.floor(length);
-                    } else {
-                        sum += Math.ceil(length);
-                        currentLength = Math.ceil(length);
-                    }
-                }
-
-                lengthArr.push({sum: sum, length: currentLength});
-            }
-
-            res = teleportSV(min, max, lengthArr[0].length);
-            breakpoint = res.frames;
-
-            for(let i = 0; i < frameCount; i++) {
-                let lastFrame = frameArray[i-1] || 0;
-                let idx = lengthArr.findIndex(x => x.sum == i);
-
-                if(idx != -1) {
-                    c++;
-                    res = teleportSV(min, max, lengthArr[idx].length);
-                    breakpoint = i + res.frames;
-                }
-
-                if(i < breakpoint) {
-                    frameArray.push((windowHeight / frameCount) * (min * multip) + lastFrame);
-                    c1++;
-                } else {
-                    if(i == lengthArr[c].sum - 1 && res.rest != 0) {
-                        frameArray.push((windowHeight / frameCount) * (max * res.rest * multip) + lastFrame);
-                        c2++;
-                    } else if(i == frameCount - 1 && res.rest != 0) {
-                        frameArray.push((windowHeight / frameCount) * (max * res.rest * multip) + lastFrame);
-                        c2++;
-                    } else {
-                        frameArray.push((windowHeight / frameCount) * (max * multip) + lastFrame);
-                        c3++;
-                    }
-                }
-            }
-            
-            console.log(`Min Frames: ${c1}\nMax Frames: ${c3}\nEnd Frames: ${c2}\nTotal Frames: ${c1+c2+c3}\n\nSum: ${(c1 * min) + (c3 * max) + (c2 * max * res.rest)}`);
-
+            applyHeight(stutterSV(min, max, freq));
             break;
         default:
             for(let i = 0; i < frameCount; i++) {
@@ -220,28 +91,47 @@ function calculateHeight(type) {
     }
 }
 
-function linearSV(frame, end) {
-    let start = 2 - end;
-    let delta = ((end - start) / frameCount);
+function applyHeight(res) {
+    let breakpoint = res[1].time;
+    let multi = res[0].multi;
+    let j = 1;
 
-    if(frameCount % 2 == 0) {
-        if(frame >= (frameCount / 2)) frame++; // Skips a frame since frameCount is even
+    for(let i = 0; i < frameCount; i++) {
+        if(i > breakpoint) {
+            if(j+1 >= res.length) {
+                breakpoint = 99999999;
+                multi = res[j].multi;
+            }
+            else {
+                j++;
+                breakpoint = res[j].time;
+                multi = res[j-1].multi;
+            }
+        }
+
+        let lastFrame = frameArray[i-1] || 0;
+        frameArray.push((windowHeight / frameCount) * multi + lastFrame);
     }
-
-    let adj = start + (delta * frame);
-
-    return adj * multip;
 }
 
-function instantTPSV(min) {
-    // frames = 239;
-    // min = 0.5, framesLeft = 120
-    // max = 120
+function linearSV(input, length = frameCount) {
+    let t = new Array(MAX_TIMING_POINTS);
 
-    let framesLeft = frameCount - 1;
-    let max = frameCount - (framesLeft * min);
+    let start = 2 - input;
+    let delta = ((input - start) / (MAX_TIMING_POINTS - 1));
 
-    return {frames: framesLeft-1, max: max}
+    for(let i = 0; i < MAX_TIMING_POINTS; i++) {
+        t[i] = { time: Math.floor(i * (length / MAX_TIMING_POINTS)), multi: (start + (delta * i)) }
+    }
+
+    return t;
+}
+
+function instantTPSV(min, length = frameCount) {
+    let framesLeft = length - 1;
+    let max = length - (framesLeft * min);
+    
+    return [{time: 0, multi: min}, {time: length - 2, multi: max}];
 }
 
 function teleportSV(min, max, length = frameCount) {
@@ -263,12 +153,19 @@ function teleportSV(min, max, length = frameCount) {
     maxFrames = (length - minFrames) / max;
 
     let frames = length - Math.ceil(maxFrames);
+    let rest = maxFrames % 1;
 
-    return { frames: frames, rest: maxFrames % 1 }
+    let t = [{time: 0, multi: min}, {time: frames, multi: max}];
+    if(rest > 0) {
+        t.push({time: length - 1, multi: max * rest});
+        if(t[2].time == t[1].time) t.splice(1,1);
+    }
+
+    return t;
 }
 
 function exponentialSV(limit, length = frameCount) {
-    let t = new Array(16);
+    let t = new Array(MAX_TIMING_POINTS);
     let d = 0.1;
     let change = 0.1;
     let prevD = [];
@@ -287,8 +184,8 @@ function exponentialSV(limit, length = frameCount) {
 
         prevD.push(d);
 
-        if ((sum / 16) > (multip + (0.0001 * multip))) d = d - change;
-        else if ((sum / 16) < (multip - (0.0001 * multip))) d = d + change;
+        if ((sum / MAX_TIMING_POINTS) > (multip + (0.0001 * multip))) d = d - change;
+        else if ((sum / MAX_TIMING_POINTS) < (multip - (0.0001 * multip))) d = d + change;
         else break;
 
         if(d == prevD.at(-2)) change /= 10;
@@ -299,8 +196,25 @@ function exponentialSV(limit, length = frameCount) {
     console.log('EXP retry count: ' + c);
     console.log('d: ' + change);
 
-    for(let i = 0; i < t.length; i++) {
-        t[i] = {time: Math.floor(i * (length / 16)), multi: t[i]};
+    for(let i = 0; i < MAX_TIMING_POINTS; i++) {
+        t[i] = {time: Math.floor(i * (length / MAX_TIMING_POINTS)), multi: t[i]};
+    }
+
+    return t;
+}
+
+function stutterSV(min, max, freq, length = frameCount) {
+    let res = teleportSV(min, max, Math.round(length / freq));
+    let add = 0;
+
+    let t = [];
+
+    for(let i = 0; i < freq; i++) {
+        if(t.length > 0) add = t.at(-1).time + 1;
+
+        t.push({ time: Math.round(res[0].time + add), multi: res[0].multi });
+        t.push({ time: Math.round(res[1].time + add), multi: res[1].multi });
+        if(res.length > 2) t.push({ time: Math.round(res[2].time + add), multi: res[2].multi })
     }
 
     return t;

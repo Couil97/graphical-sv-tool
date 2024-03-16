@@ -33,13 +33,14 @@ function renderExponential(canvas) {
 
 function renderStutter(canvas) {
     let times = getTimeInputs();
-    let input = getInputSlider('Intensity', 1, 0.01, 10, 5, 'input', 'stutter');
+    let lower = getInputSlider('Lower Boundry', 0.01, 0.01, 1, 0.5, 'lower', 'stutter');
+    let upper = getInputSlider('Upper Boundry', 1, 0.01, 10, 2, 'upper', 'stutter');
     let frequency = getFrequecySelect();
 
     let input_group = document.createElement('div');
     input_group.className = 'input-group';
 
-    input_group.append(input, frequency);
+    input_group.append(lower, upper, frequency);
 
     canvas.append(times, input_group);
 }
