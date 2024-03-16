@@ -91,12 +91,12 @@ function calculateHeight(type) {
     }
 }
 
-function applyHeight(res) {
+function applyHeight(res, length = frameCount) {
     let breakpoint = res[1].time;
     let multi = res[0].multi;
     let j = 1;
 
-    for(let i = 0; i < frameCount; i++) {
+    for(let i = 0; i < length; i++) {
         if(i > breakpoint) {
             if(j+1 >= res.length) {
                 breakpoint = 99999999;
@@ -112,6 +112,33 @@ function applyHeight(res) {
         let lastFrame = frameArray[i-1] || 0;
         frameArray.push((windowHeight / frameCount) * multi * multip + lastFrame);
     }
+
+    convertToTimingPoints(res, length);
+}
+
+function convertToTimingPoints(res, start = 0, end = 240) {
+    let timingPoints = '';
+
+    for(let item of res) {
+        let multi = roundDecimal(item.multi * multip, 2);
+
+        if(multi > 10) {
+            timingPoints += (start + parseInt(item.time)) + ',' + (60000 / parseFloat(document.querySelector('#songBpm').value)) / multi + ',1,1,0,100,1,0\n'
+        }
+        else {
+            timingPoints += (start + parseInt(item.time)) + ',' + (-100 / multi) + ',1,1,0,100,0,0\n'
+        }
+    }
+
+    if(res.at(-1).multi * multip > 10) {
+        timingPoints += end + ',' + (60000 / parseFloat(document.querySelector('#songBpm').value)) + ',1,1,0,100,1,0\n'
+        timingPoints += end + ',' + -100 + ',1,1,0,100,0,0\n'
+    } else {
+        timingPoints += end + ',' + -100 + ',1,1,0,100,0,0\n'
+    }
+
+    copy(timingPoints);
+    document.querySelector('.sv-output').innerHTML = timingPoints.replace(/\n/g,'<br>');
 }
 
 function linearSV(input, length = frameCount) {
@@ -193,11 +220,8 @@ function exponentialSV(limit, length = frameCount) {
         c++;
     }
 
-    console.log('EXP retry count: ' + c);
-    console.log('d: ' + change);
-
     for(let i = 0; i < MAX_TIMING_POINTS; i++) {
-        t[i] = {time: Math.floor(i * (length / MAX_TIMING_POINTS)), multi: t[i]};
+        t[i] = {time: Math.floor(i * (length / MAX_TIMING_POINTS)), multi: (t[i] < 0.01) ? 0.01 : t[i]};
     }
 
     return t;
@@ -260,13 +284,29 @@ function setTimescale(input) {
     toggleDraw();
 }
 
+function copy(text) {
+    var input = document.createElement('textarea');
+    input.innerHTML = text;
+    document.body.appendChild(input);
+    input.select();
+    var result = document.execCommand('copy');
+    document.body.removeChild(input);
+    return result;
+}
+
+function roundDecimal(num, decimals = 1) {
+    return Math.round(num * 10**decimals) / 10**decimals;
+}
+
 let multip = document.querySelector('#songBpm').value / document.querySelector('#currentBpm').value;
 multip *= document.querySelector('#currentMulti').value;
+multip = roundDecimal(multip);
 
 document.querySelectorAll('.song-info-inputs').forEach(element => {
     element.addEventListener('change', function () {
         multip = document.querySelector('#songBpm').value / document.querySelector('#currentBpm').value;
         multip *= document.querySelector('#currentMulti').value;
+        multip = roundDecimal(multip);
 
         calculateHeight(document.querySelector('#svType').value);
     })
