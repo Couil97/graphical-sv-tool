@@ -1,7 +1,7 @@
 let windowHeight;
 let frameArray;
 
-let frameCount = 240;
+let frameCount = 239;
 let timeScale = 1;
 let stop_interval;
 let draw_stopped = false;
@@ -111,13 +111,27 @@ function calculateHeight(type) {
             break;
         case 'exponential': 
             input = parseFloat(document.querySelector('#input').value);
-            res = exponentialSV(input);
+            res = exponentialSV(input, frameCount);
+
+            let breakpoint = res[1].time;
+            let multi = res[0].multi;
+            let j = 1;
 
             for(let i = 0; i < frameCount; i++) {
-                if(i % (frameCount / 16) == 0) j++;
+                if(i > breakpoint) {
+                    if(j+1 >= res.length) {
+                        breakpoint = 99999999;
+                        multi = res[j].multi;
+                    }
+                    else {
+                        j++;
+                        breakpoint = res[j].time;
+                        multi = res[j-1].multi;
+                    }
+                }
 
                 let lastFrame = frameArray[i-1] || 0;
-                frameArray.push((windowHeight / frameCount) * res[j] + lastFrame);
+                frameArray.push((windowHeight / frameCount) * multi + lastFrame);
             }
             break;
         case 'stutter':
@@ -253,7 +267,7 @@ function teleportSV(min, max, length = frameCount) {
     return { frames: frames, rest: maxFrames % 1 }
 }
 
-function exponentialSV(limit) {
+function exponentialSV(limit, length = frameCount) {
     let t = new Array(16);
     let d = 0.1;
     let change = 0.1;
@@ -284,6 +298,10 @@ function exponentialSV(limit) {
 
     console.log('EXP retry count: ' + c);
     console.log('d: ' + change);
+
+    for(let i = 0; i < t.length; i++) {
+        t[i] = {time: Math.floor(i * (length / 16)), multi: t[i]};
+    }
 
     return t;
 }
