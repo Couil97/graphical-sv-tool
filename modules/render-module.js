@@ -1,12 +1,12 @@
 function renderLinear(canvas) {
-    let times = getTimeInputs();
+    let times = getTimeInputs('linear');
     let slider = getInputSlider('SV Limit', 1, 0.01, 2, 1.5, 'input', 'linear');
 
     canvas.append(times, slider);
 }
 
 function renderTeleport(canvas) {
-    let times = getTimeInputs();
+    let times = getTimeInputs('teleport');
     let lower = getInputSlider('Lower Boundry', 0.01, 0.01, 1, 0.5, 'lower', 'teleport');
     let upper = getInputSlider('Upper Boundry', 1, 0.01, 10, 2, 'upper', 'teleport');
     let instant_tp = getCheckbox('Enable Instant Teleport', 'teleport');
@@ -20,7 +20,7 @@ function renderTeleport(canvas) {
 }
 
 function renderExponential(canvas) {
-    let times = getTimeInputs();
+    let times = getTimeInputs('exponential');
     let input = getInputSlider('Intensity', 0.01, 0.01, 10, 1.5, 'input', 'exponential');
 
     let input_group = document.createElement('div');
@@ -32,7 +32,7 @@ function renderExponential(canvas) {
 }
 
 function renderStutter(canvas) {
-    let times = getTimeInputs();
+    let times = getTimeInputs('stutter');
     let lower = getInputSlider('Lower Boundry', 0.01, 0.01, 1, 0.5, 'lower', 'stutter');
     let upper = getInputSlider('Upper Boundry', 1, 0.01, 10, 2, 'upper', 'stutter');
     let frequency = getFrequecySelect();
@@ -45,7 +45,7 @@ function renderStutter(canvas) {
     canvas.append(times, input_group);
 }
 
-function getTimeInputs() {
+function getTimeInputs(type) {
     let input_group = document.createElement('div');
     input_group.className = 'input-group';
 
@@ -57,6 +57,7 @@ function getTimeInputs() {
 
     start_label.textContent = 'Start';
     start_input.id = 'start';
+    start_input.oninput = function() { calculateHeight(type) }
 
     start_div.append(start_label, start_input);
 
@@ -68,6 +69,7 @@ function getTimeInputs() {
 
     end_label.textContent = 'End';
     end_input.id = 'end';
+    end_input.oninput = function() { calculateHeight(type) }
 
     end_div.append(end_label, end_input);
 

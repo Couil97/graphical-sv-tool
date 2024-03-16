@@ -113,10 +113,13 @@ function applyHeight(res, length = frameCount) {
         frameArray.push((windowHeight / frameCount) * multi * multip + lastFrame);
     }
 
-    convertToTimingPoints(res, length);
+    convertToTimingPoints(res, parseInt(interpString(document.querySelector('#start').value)), parseInt(interpString(document.querySelector('#end').value)));
 }
 
 function convertToTimingPoints(res, start = 0, end = 240) {
+    if(isNaN(start)) start = 0;
+    if(isNaN(end)) end = 240;
+
     let timingPoints = '';
 
     for(let item of res) {
@@ -292,6 +295,14 @@ function copy(text) {
     var result = document.execCommand('copy');
     document.body.removeChild(input);
     return result;
+}
+
+function interpString(text) {
+    text = text.replace(/\D/g, '');
+    for (let i = 0; i < text.length; i++)
+        if (text[0] == '0') text = text.substring(1);
+
+    return text;
 }
 
 function roundDecimal(num, decimals = 1) {
