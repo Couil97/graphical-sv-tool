@@ -64,27 +64,19 @@ function calculateHeight(type) {
         case 'linear':
             input = parseFloat(document.querySelector('#input').value);
 
-            applyHeight(linearSV(input));
-            convertToTimingPoints(linearSV(input, end - start), start, end);
+            prepareChanges(linearSV(input),linearSV(input, end - start), start, end)
             break;
         case 'teleport':
             min = parseFloat(document.querySelector('#lower').value);
             max = parseFloat(document.querySelector('#upper').value);
 
-            if(document.querySelector('#urankable').checked) {
-                applyHeight(instantTPSV(min))
-                convertToTimingPoints(instantTPSV(min, end - start), start, end);
-            }
-            else {
-                applyHeight(teleportSV(min, max));
-                convertToTimingPoints(teleportSV(min, max, end - start), start, end);
-            }
+            if(document.querySelector('#urankable').checked) prepareChanges(instantTPSV(min), instantTPSV(min, end - start), start, end)
+            else prepareChanges(teleportSV(min, max), teleportSV(min, max, end - start), start, end)
             break;
         case 'exponential': 
             input = parseFloat(document.querySelector('#input').value);
 
-            applyHeight(exponentialSV(input));
-            convertToTimingPoints(exponentialSV(input, end - start), start, end);
+            prepareChanges(exponentialSV(input), exponentialSV(input, end - start), start, end)
             break;
         case 'stutter':
             min = parseFloat(document.querySelector('#lower').value);
@@ -92,8 +84,7 @@ function calculateHeight(type) {
 
             let freq = parseInt(document.querySelector('#frequency').value);
 
-            applyHeight(stutterSV(min, max, freq));
-            convertToTimingPoints(stutterSV(min, max, freq, end - start), start, end);
+            prepareChanges(stutterSV(min, max, freq), stutterSV(min, max, freq, end - start), start, end)
             break;
         default:
             for(let i = 0; i < frameCount; i++) {
@@ -101,6 +92,31 @@ function calculateHeight(type) {
             }
             break;
     }
+}
+
+function prepareChanges(render, timingpoints, start, end) {
+    if(document.querySelector('#reverseSV').checked) {
+        render = reverseSV(render, start, end);
+        timingpoints = reverseSV(timingpoints, start, end);
+    }
+
+    applyHeight(render);
+    convertToTimingPoints(timingpoints, start, end);
+}
+
+function reverseSV(array, start, end) {
+    let copy = JSON.parse(JSON.stringify(array));
+    let j = array.length - 1;
+    let rest = end;
+
+    for(let i = 0; i < copy.length; i++) {
+        copy[i].time = ((i+1 < copy.length) ? rest -= (array[i+1].time - array[i].time) : 0)
+        j--;
+    }
+
+    copy.sort((a,b) => a.time - b.time);
+
+    return copy;
 }
 
 function applyHeight(res, length = frameCount) {
@@ -161,7 +177,8 @@ function linearSV(input, length = frameCount) {
     let delta = ((input - start) / (MAX_TIMING_POINTS - 1));
 
     for(let i = 0; i < MAX_TIMING_POINTS; i++) {
-        t[i] = { time: Math.floor(i * (length / MAX_TIMING_POINTS)), multi: (start + (delta * i)) }
+        let multi = start + (delta * i);
+        t[i] = { time: Math.floor(i * (length / MAX_TIMING_POINTS)), multi: (multi >= 2) ? 1.99 : (multi <= 0) ? 0.01 : multi }
     }
 
     return t;
