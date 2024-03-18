@@ -39,10 +39,11 @@
                         <option value="exponential">Exponential</option>
                         <option value="stutter">Stutter</option>
                         <option value="square-root">Square Root</option>
+                        <option value="power">Power</option>
 <!--                        <option value="stop">Stop</option> -->
                     </select>
                     <label for="reverseSV">Reverse</label>
-                    <input onchange="calculateHeight(document.querySelector('#svType'))" type="checkbox" name="reverse" id="reverseSV">
+                    <input onchange="calculateHeight()" type="checkbox" name="reverse" id="reverseSV">
                 </div>
                 <div class="sv-manipulation">
 
@@ -71,6 +72,8 @@
             <img src="./images/mania-receptor.png" class="mania-receptor" style="left: 25%;" alt="osu!mania receptor">
             <img src="./images/mania-receptor.png" class="mania-receptor" style="left: 50%;" alt="osu!mania receptor">
             <img src="./images/mania-receptor.png" class="mania-receptor" style="left: 75%;" alt="osu!mania receptor">
+
+            <div class="accuracy"><span id="num"></span></div>
         </div>
     </body>
 </html>

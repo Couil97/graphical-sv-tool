@@ -31,14 +31,27 @@ function renderExponential(canvas) {
     canvas.append(times, input_group);
 }
 
-function renderSquareRoot(canvas) {
+function renderSquareRoot(canvas){
     let times = getTimeInputs('square-root');
-    let input = getInputSlider('Intensity', 0.01, 0.01, 2, 1.5, 'input', 'square-root');
+    let input = getInputSlider('Intensity', 0.01, 0.01, 3, 1.5, 'input', 'square-root');
 
     let input_group = document.createElement('div');
     input_group.className = 'input-group';
 
     input_group.append(input);
+
+    canvas.append(times, input_group);
+}
+
+function renderPower(canvas){
+    let times = getTimeInputs('power');
+    let min = getInputSlider('Limit', 0.01, 0.01, 1, 0.5, 'lower', 'power');
+    let max = getInputSlider('Power', 1, 0.01, 10, 2, 'upper', 'power');
+
+    let input_group = document.createElement('div');
+    input_group.className = 'input-group';
+
+    input_group.append(min, max);
 
     canvas.append(times, input_group);
 }

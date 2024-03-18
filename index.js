@@ -28,7 +28,7 @@ function draw() {
 
         frame++;
         if(frame >= frameCount) {
-            console.log('Undershoot: ' + (((windowHeight / frameArray.at(-1)) - 1) * 100).toFixed(0) + '%' + ', Time: ' + ((Date.now() - time) / 1000).toFixed(2) + 's');
+            document.querySelector('#num').textContent = 'Undershoot: ' + ((((windowHeight * multip) / frameArray.at(-1)) - 1) * 100).toFixed(2) + '%' + ', Time: ' + ((Date.now() - time) / 1000).toFixed(2) + 's';
             time = Date.now();
             frame = 0;
         }
@@ -53,7 +53,7 @@ function drawNotes(frame) {
     }
 }
 
-function calculateHeight(type) {
+function calculateHeight(type = document.querySelector('#svType').value) {
     frameArray = [];
 
     let min, max, input;
@@ -90,6 +90,12 @@ function calculateHeight(type) {
             input = parseFloat(document.querySelector('#input').value);
 
             prepareChanges(squareRootSV(input), squareRootSV(input, end - start), start, end)
+            break;
+        case 'power':
+            min = parseFloat(document.querySelector('#lower').value);
+            max = parseFloat(document.querySelector('#upper').value);
+
+            prepareChanges(powerSV(min, max), powerSV(min, max, end - start), start, end)
             break;
         default:
             for(let i = 0; i < frameCount; i++) {
@@ -238,7 +244,7 @@ function exponentialSV(limit, length = frameCount) {
         let initial_value = Math.log(limit);
         sum = 0;
 
-        for (let i = 0; i < 16; i++) {
+        for (let i = 0; i < MAX_TIMING_POINTS; i++) {
             t[i] = Math.exp(initial_value)
             t[i] = (t[i] < 0.01) ? 0.01 : t[i]; 
             initial_value = initial_value + d;
@@ -275,7 +281,7 @@ function squareRootSV(limit, length = frameCount) {
         let initial_value = limit * limit;
         sum = 0;
 
-        for (let i = 0; i < 16; i++) {
+        for (let i = 0; i < MAX_TIMING_POINTS; i++) {
             t[i] = Math.sqrt(initial_value);
             if(isNaN(t[i]) || t[i] < 0.01) t[i] = 0.01;
             initial_value = initial_value + d;
@@ -298,6 +304,46 @@ function squareRootSV(limit, length = frameCount) {
     }
 
     console.log(t);
+
+    return t;
+}
+
+function powerSV(limit, power = 2, length = frameCount) {
+    let t = new Array(MAX_TIMING_POINTS);
+    let d = 0.1;
+    let change = 0.1;
+    let prevD = [];
+
+    let c = 0;
+
+    while(c < 100) {
+        let initial_value = Math.pow(limit, 1 / power);
+        sum = 0;
+
+        for(let i = 0; i < MAX_TIMING_POINTS; i++) {
+            t[i] = Math.pow(initial_value, power);
+
+            t[i] = (isNaN(t[i]) || t[i] < 0.01) ? 0.01 : t[i];
+            t[i] = (t[i] > 10) ? 10 : t[i];
+
+            initial_value = initial_value + d;
+            sum = sum + t[i];
+        }
+
+        prevD.push(d);
+
+        if ((sum / MAX_TIMING_POINTS) > (multip + (0.0001 * multip))) d = d - change;
+        else if ((sum / MAX_TIMING_POINTS) < (multip - (0.0001 * multip))) d = d + change;
+        else break;
+
+        if(d == prevD.at(-2)) change /= 10;
+
+        c++;
+    }
+
+    for(let i = 0; i < MAX_TIMING_POINTS; i++) {
+        t[i] = {time: Math.floor(i * (length / MAX_TIMING_POINTS)), multi: t[i]};
+    }
 
     return t;
 }
@@ -340,6 +386,9 @@ function renderSVManipulation() {
             break;
         case 'square-root':
             renderSquareRoot(svManipulationCanvas);
+            break;
+        case 'power':
+            renderPower(svManipulationCanvas);
             break;
         case 'stop':
             renderStop(svManipulationCanvas);

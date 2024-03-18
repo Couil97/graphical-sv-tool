@@ -12,6 +12,14 @@
     overflow: hidden;
 }
 
+.accuracy {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+
+    color: rgba(255, 255, 255, 0.40);
+}
+
 body {
     height: 100vh;
 
@@ -131,3 +139,23 @@ html > *, body > * {
 
     box-sizing: border-box;
 }
+
+.sv-output {
+    display: inline-block;
+}
+
+.sv-info {
+    display: block;
+    overflow: auto;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.sv-info::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .sv-info {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
