@@ -41,21 +41,21 @@
 <!--                        <option value="stop">Stop</option> -->
                     </select>
                 </div>
-                
                 <div class="sv-manipulation">
 
                 </div>
-                <div class="sv-output">
-                    
-                </div>
-                <div style="box-sizing: border-box; width: 100%; display: flex; justify-content: end;" class="button-div">
-                    <button onclick="toggleDraw()">Toggle playback</button>
-                    <div class="input">
-                        <label for="timeScaleRange">Timescale</label>
-                        <input type="range" name="Timescale" id="timeScaleRange" min="0.1" value="1" max="1" step="0.05" oninput="this.nextElementSibling.textContent = this.value; setTimescale(this.value);">
-                        <div class="output">1</div>
+                <div class="end-box">
+                    <div class="sv-output"></div>
+                    <div style="align-items: center; box-sizing: border-box; width: 100%; display: flex; justify-content: end; height: 50px" class="button-div">
+                        <button onclick="toggleDraw()">Toggle playback</button>
+                        <div class="input">
+                            <label for="timeScaleRange">Timescale</label>
+                            <input type="range" name="Timescale" id="timeScaleRange" min="0.1" value="1" max="1" step="0.05" oninput="this.nextElementSibling.textContent = this.value; setTimescale(this.value);">
+                            <div class="output">1</div>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
         <div class="display">

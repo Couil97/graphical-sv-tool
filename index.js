@@ -217,7 +217,8 @@ function exponentialSV(limit, length = frameCount) {
         sum = 0;
 
         for (let i = 0; i < 16; i++) {
-            t[i] = Math.exp(initial_value);
+            t[i] = Math.exp(initial_value)
+            t[i] = (t[i] < 0.01) ? 0.01 : t[i]; 
             initial_value = initial_value + d;
             sum = sum + t[i];
         }
@@ -234,7 +235,7 @@ function exponentialSV(limit, length = frameCount) {
     }
 
     for(let i = 0; i < MAX_TIMING_POINTS; i++) {
-        t[i] = {time: Math.floor(i * (length / MAX_TIMING_POINTS)), multi: (t[i] < 0.01) ? 0.01 : t[i]};
+        t[i] = {time: Math.floor(i * (length / MAX_TIMING_POINTS)), multi: t[i]};
     }
 
     return t;
