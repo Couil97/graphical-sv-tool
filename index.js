@@ -86,6 +86,11 @@ function calculateHeight(type) {
 
             prepareChanges(stutterSV(min, max, freq), stutterSV(min, max, freq, end - start), start, end)
             break;
+        case 'square-root':
+            input = parseFloat(document.querySelector('#input').value);
+
+            prepareChanges(squareRootSV(input), squareRootSV(input, end - start), start, end)
+            break;
         default:
             for(let i = 0; i < frameCount; i++) {
                 frameArray.push((i * windowHeight) / frameCount);
@@ -96,7 +101,7 @@ function calculateHeight(type) {
 
 function prepareChanges(render, timingpoints, start, end) {
     if(document.querySelector('#reverseSV').checked) {
-        render = reverseSV(render, start, end);
+        render = reverseSV(render, 0, frameCount);
         timingpoints = reverseSV(timingpoints, start, end);
     }
 
@@ -110,7 +115,7 @@ function reverseSV(array, start, end) {
     let rest = end;
 
     for(let i = 0; i < copy.length; i++) {
-        copy[i].time = ((i+1 < copy.length) ? rest -= (array[i+1].time - array[i].time) : 0)
+        copy[i].time = ((i+1 < copy.length) ? rest -= (array[i+1].time - array[i].time) : start)
         j--;
     }
 
@@ -258,6 +263,45 @@ function exponentialSV(limit, length = frameCount) {
     return t;
 }
 
+function squareRootSV(limit, length = frameCount) {
+    let t = new Array(MAX_TIMING_POINTS);
+    let d = 0.1;
+    let change = 0.1;
+    let prevD = [];
+
+    let c = 0;
+
+    while (c < 100) {
+        let initial_value = limit * limit;
+        sum = 0;
+
+        for (let i = 0; i < 16; i++) {
+            t[i] = Math.sqrt(initial_value);
+            if(isNaN(t[i]) || t[i] < 0.01) t[i] = 0.01;
+            initial_value = initial_value + d;
+            sum = sum + t[i];
+        }
+
+        prevD.push(d);
+
+        if ((sum / MAX_TIMING_POINTS) > (multip + (0.0001 * multip))) d = d - change;
+        else if ((sum / MAX_TIMING_POINTS) < (multip - (0.0001 * multip))) d = d + change;
+        else break;
+
+        if(d == prevD.at(-2)) change /= 10;
+
+        c++;
+    }
+
+    for(let i = 0; i < MAX_TIMING_POINTS; i++) {
+        t[i] = {time: Math.floor(i * (length / MAX_TIMING_POINTS)), multi: t[i]};
+    }
+
+    console.log(t);
+
+    return t;
+}
+
 function stutterSV(min, max, freq, length = frameCount) {
     let res = teleportSV(min, max, Math.round(length / freq));
     let add = 0;
@@ -293,6 +337,9 @@ function renderSVManipulation() {
             break;
         case 'stutter':
             renderStutter(svManipulationCanvas);
+            break;
+        case 'square-root':
+            renderSquareRoot(svManipulationCanvas);
             break;
         case 'stop':
             renderStop(svManipulationCanvas);

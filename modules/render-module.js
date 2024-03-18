@@ -31,6 +31,18 @@ function renderExponential(canvas) {
     canvas.append(times, input_group);
 }
 
+function renderSquareRoot(canvas) {
+    let times = getTimeInputs('square-root');
+    let input = getInputSlider('Intensity', 0.01, 0.01, 2, 1.5, 'input', 'square-root');
+
+    let input_group = document.createElement('div');
+    input_group.className = 'input-group';
+
+    input_group.append(input);
+
+    canvas.append(times, input_group);
+}
+
 function renderStutter(canvas) {
     let times = getTimeInputs('stutter');
     let lower = getInputSlider('Lower Boundry', 0.01, 0.01, 1, 0.5, 'lower', 'stutter');
