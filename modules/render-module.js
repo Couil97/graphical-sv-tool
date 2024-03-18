@@ -45,6 +45,7 @@ function renderSquareRoot(canvas){
 
 function renderPower(canvas){
     let times = getTimeInputs('power');
+    
     let min = getInputSlider('Limit', 0.01, 0.01, 1, 0.5, 'lower', 'power');
     let max = getInputSlider('Power', 1, 0.01, 10, 2, 'upper', 'power');
 

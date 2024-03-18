@@ -310,6 +310,7 @@ function squareRootSV(limit, length = frameCount) {
 
 function powerSV(limit, power = 2, length = frameCount) {
     let t = new Array(MAX_TIMING_POINTS);
+    
     let d = 0.1;
     let change = 0.1;
     let prevD = [];
