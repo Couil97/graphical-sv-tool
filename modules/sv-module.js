@@ -222,9 +222,9 @@ function convertToTimingPoints(res, start = 0, end = 240) {
 
     if(res.at(-1).multi * multip > 10) {
         timingPoints += end + ',' + (60000 / parseFloat(document.querySelector('#songBpm').value)) + ',1,1,0,100,1,0\n'
-        timingPoints += end + ',' + -100 + ',1,1,0,100,0,0\n'
+        timingPoints += end + ',' + (-100 / multip) + ',1,1,0,100,0,0\n'
     } else {
-        timingPoints += end + ',' + -100 + ',1,1,0,100,0,0\n'
+        timingPoints += end + ',' + (-100 / multip) + ',1,1,0,100,0,0\n'
     }
 
     copy(timingPoints);
