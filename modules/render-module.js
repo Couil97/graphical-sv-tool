@@ -83,7 +83,7 @@ function getTimeInputs(type) {
 
     start_label.textContent = 'Start';
     start_input.id = 'start';
-    start_input.oninput = function() { calculateHeight(type) }
+    start_input.onchange = function() { calculateHeight(type) }
 
     start_div.append(start_label, start_input);
 
@@ -95,7 +95,7 @@ function getTimeInputs(type) {
 
     end_label.textContent = 'End';
     end_input.id = 'end';
-    end_input.oninput = function() { calculateHeight(type) }
+    end_input.onchange = function() { calculateHeight(type) }
 
     end_div.append(end_label, end_input);
 

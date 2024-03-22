@@ -1,0 +1,47 @@
+<script src="/views/header.js"></script>
+<script src="/uncompress/uncompress.js" defer></script>
+<script src="/modules/_file-module.js" defer></script>
+<script src="/views/header-close.js"></script>  
+
+<div class="controller">
+    <div class="song-info">
+        <h3>Song Info</h3>
+        <div class="input-group">
+            <div class="input">
+                <label for="songBpm">Song BPM</label>
+                <input class="song-info-inputs" type="number" name="Song BPM" id="songBpm" value="200">
+            </div>
+    
+            <div class="input">
+                <label for="currentBPM">Current BPM</label>
+                <input class="song-info-inputs" type="number" name="Current BPM" id="currentBpm" value="200">
+            </div>
+    
+            <div class="input">
+                <label for="currentMulti">Multi</label>
+                <input class="song-info-inputs" type="number" step="0.1" name="Multi" id="currentMulti" value="1.0">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <button id="fileInputButton" type="button" onclick="document.querySelector('#fileInput').click()">Select file</button>
+            <input id="fileInput" type="file"/>
+        </div>
+
+        <div name="fileSelect" id="fileSelect"></div>
+    </div>
+</div>
+
+<div class="display">
+    <div class="track">    
+    </div>
+
+    <img src="/images/mania-receptor.png" class="mania-receptor" alt="osu!mania receptor">
+    <img src="/images/mania-receptor.png" class="mania-receptor" style="left: 25%;" alt="osu!mania receptor">
+    <img src="/images/mania-receptor.png" class="mania-receptor" style="left: 50%;" alt="osu!mania receptor">
+    <img src="/images/mania-receptor.png" class="mania-receptor" style="left: 75%;" alt="osu!mania receptor">
+
+    <div class="accuracy"><span id="num"></span></div>
+</div>
+
+<script id="footer" src="/views/footer.js"></script>

@@ -1,6 +1,7 @@
 .display {
     height: 100%;
     width: 30%;
+    min-width: 30%;
 
     background-color: rgba(0, 0, 0, 1);
 
@@ -12,6 +13,10 @@
     overflow: hidden;
 }
 
+* {
+    box-sizing: border-box;
+}
+
 .accuracy {
     position: absolute;
     bottom: 12px;
@@ -21,14 +26,16 @@
     
 }
 
-body {
-    height: 100vh;
+.track {
+    height: 100%;
+    width: 100%;
 
-    margin: 0 5%;
+    background-color: rgba(0, 0, 0, 0);
 
     display: flex;
-    justify-content: end;
+    justify-content: space-evenly;
 
+    position: relative;
     overflow: hidden;
 }
 
@@ -133,14 +140,6 @@ html,body {
     background-color: #111;
 }
 
-html > *, body > * {
-    color: white;
-    margin: 0;
-    padding: 0;
-
-    box-sizing: border-box;
-}
-
 .sv-output {
     display: inline-block;
 }
@@ -153,10 +152,61 @@ html > *, body > * {
 /* Hide scrollbar for Chrome, Safari and Opera */
 .sv-info::-webkit-scrollbar {
     display: none;
-  }
-  
-  /* Hide scrollbar for IE, Edge and Firefox */
-  .sv-info {
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.sv-info {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
-  }
+}
+
+#fileInput {
+    display: none;
+}
+
+#fileSelect {
+    display: grid;
+    grid-template-columns: 50% 50%;
+
+}
+
+.file-option {
+    width: auto;
+
+    padding: 12px;
+    margin: 12px;
+
+    border: 1px solid white;
+    border-radius: 12px;
+    cursor: pointer;
+    user-select: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-option:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.highlight {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body {
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.content-wrap {
+    height: 100vh;
+    margin: 0 5%;
+
+    display: flex;
+    justify-content: end;
+
+    overflow: hidden;
+}
