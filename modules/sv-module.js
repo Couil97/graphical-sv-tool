@@ -210,7 +210,7 @@ function convertToTimingPoints(res, start = 0, end = 240) {
     let timingPoints = '';
 
     for(let item of res) {
-        let multi = roundDecimal(item.multi * multip, 2);
+        let multi = roundDecimal(item.multi * multip, 3);
 
         if(multi > 10) {
             timingPoints += (start + parseInt(item.time)) + ',' + (60000 / parseFloat(document.querySelector('#songBpm').value)) / multi + ',1,1,0,100,1,0\n'
@@ -222,9 +222,9 @@ function convertToTimingPoints(res, start = 0, end = 240) {
 
     if(res.at(-1).multi * multip > 10) {
         timingPoints += end + ',' + (60000 / parseFloat(document.querySelector('#songBpm').value)) + ',1,1,0,100,1,0\n'
-        timingPoints += end + ',' + (-100 / multip) + ',1,1,0,100,0,0\n'
+        timingPoints += end + ',' + (-100 / multi) + ',1,1,0,100,0,0\n'
     } else {
-        timingPoints += end + ',' + (-100 / multip) + ',1,1,0,100,0,0\n'
+        timingPoints += end + ',' + (-100 / multi) + ',1,1,0,100,0,0\n'
     }
 
     copy(timingPoints);
