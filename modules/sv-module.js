@@ -1,6 +1,6 @@
 let multip = document.querySelector('#songBpm').value / document.querySelector('#currentBpm').value;
 multip *= document.querySelector('#currentMulti').value;
-multip = roundDecimal(multip);
+multip = roundDecimal(multip, 2);
 
 document.querySelectorAll('.song-info-inputs').forEach(element => {
     element.addEventListener('change', function (e) {
@@ -8,7 +8,7 @@ document.querySelectorAll('.song-info-inputs').forEach(element => {
 
         multip = document.querySelector('#songBpm').value / document.querySelector('#currentBpm').value;
         multip *= document.querySelector('#currentMulti').value;
-        multip = roundDecimal(multip);
+        multip = roundDecimal(multip, 2);
 
         calculateHeight(document.querySelector('#svType').value);
     })
