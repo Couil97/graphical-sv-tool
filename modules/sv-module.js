@@ -1,3 +1,19 @@
+let multip = document.querySelector('#songBpm').value / document.querySelector('#currentBpm').value;
+multip *= document.querySelector('#currentMulti').value;
+multip = roundDecimal(multip);
+
+document.querySelectorAll('.song-info-inputs').forEach(element => {
+    element.addEventListener('change', function (e) {
+        e.preventDefault();
+
+        multip = document.querySelector('#songBpm').value / document.querySelector('#currentBpm').value;
+        multip *= document.querySelector('#currentMulti').value;
+        multip = roundDecimal(multip);
+
+        calculateHeight(document.querySelector('#svType').value);
+    })
+});
+
 function reverseSV(array, start, end) {
     let copy = JSON.parse(JSON.stringify(array));
     let j = array.length - 1;
@@ -221,10 +237,10 @@ function convertToTimingPoints(res, start = 0, end = 240) {
     }
 
     if(res.at(-1).multi * multip > 10) {
-        timingPoints += end + ',' + (60000 / parseFloat(document.querySelector('#songBpm').value)) + ',1,1,0,100,1,0\n'
-        timingPoints += end + ',' + (-100 / multi) + ',1,1,0,100,0,0\n'
+        timingPoints += end + ',' + (60000 / parseFloat(document.querySelector('#songBpm').value) / multip) + ',1,1,0,100,1,0\n'
+        timingPoints += end + ',' + (-100 / multip) + ',1,1,0,100,0,0\n'
     } else {
-        timingPoints += end + ',' + (-100 / multi) + ',1,1,0,100,0,0\n'
+        timingPoints += end + ',' + (-100 / multip) + ',1,1,0,100,0,0\n'
     }
 
     copy(timingPoints);
